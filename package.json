@@ -1,0 +1,20 @@
+{
+  "name": "moviesapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "C:\\Users\\1080191\\AppData\\Roaming\\npm\\pm2 start ./app.js --watch --ignore-watch 'public/*' --ignore-watch 'node_modules'",
+    "stop": "C:\\Users\\1080191\\AppData\\Roaming\\npm\\pm2  stop app"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "file-base64": "^1.0.0",
+    "mysql": "^2.16.0",
+    "npx": "^10.2.0"
+  }
+}
