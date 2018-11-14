@@ -74,3 +74,37 @@ app.post('/actor', function(req, res) {
 		res.status(resp.statusCode).json(resp)
 	});
 });
+
+app.post('/auth/signin/fb', function (req, res) {
+	 var request = require("request"); 
+	 var fbURL = 'https://graph.facebook.com/me'; 
+	 var actions = '&fields=name,email,id,picture'; 
+	 var fbToken = req.body.fbToken; 
+	 var url = fbURL + '?access_token=' + fbToken + actions; 
+	 var options = {
+				 url:url, 
+				 method:'GET',
+				 contentType: 'application/json'
+				 }
+	request(options, function (error, response, body) {
+		 if (response.statusCode != 200) {
+			  res.status(response.statusCode).json({ 
+					'statusCode':response.statusCode, 
+					'result': { 'message':'Não foi possível logar com o Facebook'}
+				}) 
+					res.status(400).send(req.body)
+				}else{
+					var json = JSON.parse(body);
+					console.log(json);
+
+					res.status(200).json({
+						'statusCode':200,
+						'result' : {
+							'name' : json.name,
+							'email' : json.email,
+							'picture' : json.picture
+						}
+					})
+				}     
+				}); 
+		}); 
