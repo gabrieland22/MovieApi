@@ -27,6 +27,8 @@ app.get('/', function(req, res) {
   res.send('server is running!',200);
 });
 
+
+// Movie endpoints
 app.get('/movies', function(req, res) {
 	movieCtrl.readAll(function(resp) {
 		res.status(resp.statusCode).json(resp);
@@ -39,6 +41,30 @@ app.get('/movies', function(req, res) {
 				res.status(resp.statusCode).json(resp);
 			});
 	});
+
+	app.delete('/movie/:id', function(req, res) {
+		var id = req.params["id"];
+		movieCtrl.deleteFromID(id, function(resp) {
+			res.status(resp.statusCode).json(resp);
+		  });
+	});
+	
+	app.put('/movie/:id', function(req, res) {
+		var id = req.params["id"];
+		var body = req.body;
+		movieCtrl.edit(id, body, function(resp) {
+			res.status(resp.statusCode).json(resp);
+		  });
+	});
+	
+	app.post('/movie', function(req, res) {
+		var body = req.body;
+		movieCtrl.insert(body, function(resp){
+			res.status(resp.statusCode).json(resp)
+		});
+	});
+
+// Actors endpoints
 
   app.get('/actors', function(req, res) {
 	actorCtrl.readAll(function(resp) {
@@ -74,6 +100,8 @@ app.post('/actor', function(req, res) {
 		res.status(resp.statusCode).json(resp)
 	});
 });
+
+// Login endpoint
 
 app.post('/auth/signin/fb', function (req, res) {
 	 var request = require("request"); 
