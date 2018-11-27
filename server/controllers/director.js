@@ -7,7 +7,7 @@ var DirectorCtrl = {};
 module.exports = DirectorCtrl;
 
 
-//GET /actor/:id - detalhes de um ator
+//GET /actor/:id - detalhes de um diretor
 DirectorCtrl.readFromID = function(id, callback){
   var sql = 'select id, name, photo_url FROM Star WHERE is_director = true AND id = ?';
   var params = [id];
@@ -24,7 +24,7 @@ DirectorCtrl.readFromID = function(id, callback){
 };
 
 
-//GET /actors - lista todos os atores
+//GET /actors - lista todos os diretores
 DirectorCtrl.readAll = function(callback){
 
   var sql = 'select id, name, photo_url AS photoURL FROM Star WHERE is_director = true';
@@ -40,15 +40,15 @@ DirectorCtrl.readAll = function(callback){
   });
 };
 
-//POST /actor - insere um novo ator
+//POST /actor - insere um novo diretor
 DirectorCtrl.insert = function(params, callback){
   var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.photo, './public/images/' + imageName, function(err, output) {
+  base64.decode(params.photo_url, './public/images/' + imageName, function(err, output) {
     console.log("success")
   });
   
   var sql = 'INSERT INTO Star(name, photo_url, is_actor, is_director) VALUES(?,?,?,?)';
-  var params = [params.name, imageName, true, false];
+  var params = [params.name, imageName, false, true];
 
   database.query(sql, params, 'release', function(err, rows) {
     if (err) {
@@ -61,7 +61,7 @@ DirectorCtrl.insert = function(params, callback){
   });
 };
 
-//PUT /actor - altera um ator
+//PUT /actor - altera um diretor
 DirectorCtrl.edit = function(id, params, callback){
   var imageName = params.name.fileNameClean('.jpg');
   base64.decode(params.photo, './public/images/' + imageName, function(err, output) {
@@ -81,7 +81,7 @@ DirectorCtrl.edit = function(id, params, callback){
   });
 };
 
-//DELETE /actor - remove um ator
+//DELETE /actor - remove um diretor
 DirectorCtrl.deleteFromID = function(id, callback){
   var sql = 'DELETE FROM Star WHERE id = ? AND is_director = true';
   var params = [id];

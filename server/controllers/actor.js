@@ -43,7 +43,7 @@ ActorCtrl.readAll = function(callback){
 //POST /actor - insere um novo ator
 ActorCtrl.insert = function(params, callback){
   var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.photo, './public/images/' + imageName, function(err, output) {
+  base64.decode(params.photo_url, './public/images/' + imageName, function(err, output) {
     console.log("success")
   });
   

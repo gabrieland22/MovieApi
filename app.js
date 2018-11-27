@@ -102,6 +102,43 @@ app.post('/actor', function(req, res) {
 	});
 });
 
+// Directors endpoints
+
+app.get('/directors', function(req, res) {
+	directorCtrl.readAll(function(resp) {
+    res.status(resp.statusCode).json(resp);
+  });
+});
+
+app.get('/director/:id', function(req, res) {
+	var id = req.params["id"];
+	directorCtrl.readFromID(id, function(resp) {
+    	res.status(resp.statusCode).json(resp);
+  	});
+});
+
+app.delete('/director/:id', function(req, res) {
+	var id = req.params["id"];
+	directorCtrl.deleteFromID(id, function(resp) {
+    	res.status(resp.statusCode).json(resp);
+  	});
+});
+
+app.put('/director/:id', function(req, res) {
+	var id = req.params["id"];
+	var body = req.body;
+	directorCtrl.edit(id, body, function(resp) {
+    	res.status(resp.statusCode).json(resp);
+  	});
+});
+
+app.post('/director', function(req, res) {
+	var body = req.body;
+	directorCtrl.insert(body, function(resp){
+		res.status(resp.statusCode).json(resp)
+	});
+});
+
 // Login endpoint
 
 app.post('/auth/signin/fb', function (req, res) {
