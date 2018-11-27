@@ -1,5 +1,7 @@
+require('../util/stringExtension.js');
 var database = require('../util/databaseHelper.js');
 var response = require('../util/responseHelper.js');
+var base64 = require('file-base64');
 
 var MovieCtrl = {};
 module.exports = MovieCtrl;
@@ -38,13 +40,13 @@ MovieCtrl.readAll = function(callback){
 
 //POST /actor - insere um novo filme
 MovieCtrl.insert = function(params, callback){
-  var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.photo, './public/images/' + imageName, function(err, output) {
+  var imageName = params.title.fileNameClean('.jpg');
+  base64.decode(params.photo_url, './public/images/' + imageName, function(err, output) {
     console.log("success")
   });
   
-  var sql = 'INSERT INTO Movie(title, photo_url, released_date) VALUES(?,?,?)';
-  var params = [params.name, imageName, true, false];
+  var sql = 'INSERT INTO Movie(title, photo_url, lenght, released_date) VALUES(?,?,?,?)';
+  var params = [params.title, imageName, params.lenght ,params.released_date];
 
   database.query(sql, params, 'release', function(err, rows) {
     if (err) {

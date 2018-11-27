@@ -1,8 +1,6 @@
-// require('../util/stringExtension.js');
-
+require('../util/stringExtension.js');
 var database = require('../util/databaseHelper.js');
 var response = require('../util/responseHelper.js');
-
 var base64 = require('file-base64');
 
 var ActorCtrl = {};

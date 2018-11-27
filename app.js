@@ -18,8 +18,9 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
 //controllers
-var actorCtrl = require('./server/controllers/actor.js')
-var movieCtrl = require('./server/controllers/movie.js')
+var actorCtrl = require('./server/controllers/actor.js');
+var movieCtrl = require('./server/controllers/movie.js');
+var directorCtrl = require('./server/controllers/director.js');
 
 //router
 
