@@ -61,13 +61,13 @@ MovieCtrl.insert = function(params, callback){
 
 //PUT /movie - altera um filme
 MovieCtrl.edit = function(id, params, callback){
-  var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.photo, './public/images/' + imageName, function(err, output) {
+  var imageName = params.title.fileNameClean('.jpg');
+  base64.decode(params.photo_url, './public/images/' + imageName, function(err, output) {
     console.log("success")
   });
   
   var sql = 'UPDATE Movie SET title = ?, photo_url = ?, released_date = ? WHERE id = ? ';
-  var params = [params.name, imageName, id];
+  var params = [params.title, imageName, params.released_date, id];
 
   database.query(sql, params, 'release', function(err, rows) {
     if (err) {

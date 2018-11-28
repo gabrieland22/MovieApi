@@ -64,7 +64,7 @@ DirectorCtrl.insert = function(params, callback){
 //PUT /actor - altera um diretor
 DirectorCtrl.edit = function(id, params, callback){
   var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.photo, './public/images/' + imageName, function(err, output) {
+  base64.decode(params.photo_url, './public/images/' + imageName, function(err, output) {
     console.log("success")
   });
   
