@@ -21,6 +21,7 @@ app.use(express.static(__dirname + '/public'));
 var actorCtrl = require('./server/controllers/actor.js');
 var movieCtrl = require('./server/controllers/movie.js');
 var directorCtrl = require('./server/controllers/director.js');
+var userCtrl = require('./server/controllers/user.js');
 
 //router
 
@@ -170,7 +171,7 @@ app.post('/auth/signin/fb', function (req, res) {
 							'email' : json.email,
 							'picture' : json.picture
 						}
-					})
+					})				
 				}     
 				}); 
 		}); 
