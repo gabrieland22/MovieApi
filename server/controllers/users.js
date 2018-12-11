@@ -6,61 +6,96 @@ var base64 = require('file-base64');
 var UserCtrl = {};
 module.exports = UserCtrl;
 
+UserCtrl.readFromID = function (id, callback) {
+  var params = [id];
+  var sql = 'SELECT id, name, email, fbToken, photo_url AS photoURL FROM user WHERE id = ?';
 
-//Procura um Usuario pelo Nome
-UserCtrl.findFromNameUSR = function(name, callback){
-  var sql = 'select id FROM Star WHERE  name = ?';
-  var params = [name];
+  database.query(sql, params, 'release', function (err, rows) {
+      if (err) {
+          callback(response.error(400));
+          return;
+      }
 
+      if (!rows || rows.length == 0) {
+          callback(response.error(404));
+          return;
+      }
 
-  database.query(sql, params, 'release', function(err, rows) {
-    if (!rows || rows.length == 0){
-      callback(response.result(400));
-      return;
-    }
-
-    return callback(response.result(200, rows[0]));
-  });
-};
- 
-//Insere um novo Usuário
-UserCtrl.insert = function(params, callback){
-  var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.name, './public/images/' + imageName, function(err, output) {
-    console.log("success")
-  });
-  
-  var sql = 'INSERT INTO User(email ,fbToken, name, photo_url) VALUES(?,?,?,?)';
-  var params = [params.email ,params.fbToken, params.name, imageName];
-
-  database.query(sql, params, 'release', function(err, rows) {
-    if (err) {
-      callback(response.error(400, err));
-      return;
-    }
-    
-    var id = rows.insertId;
-    UserCtrl.readFromID(id, callback);
+      callback(response.result(200, rows[0]));
   });
 };
 
-// Altera um usuário
-UserCtrl.edit = function(id, params, callback){
-  var imageName = params.name.fileNameClean('.jpg');
-  base64.decode(params.name, './public/images/' + imageName, function(err, output) {
-    console.log("success")
-  });
-  
-  var sql = 'UPDATE User SET email = ?, fb_token = ?, name = ?, photo_url = ? WHERE id = ? ';
-  var params = [params.email ,params.fbToken, params.name, imageName, id];
+UserCtrl.insert = function (fbToken, userFacebook, callback) {
+  params = [userFacebook.name, fbToken, userFacebook.picture.data.url, userFacebook.email];
+  sql = 'INSERT INTO user (name, fbToken, photo_url, email) VALUES (?,?,?,?)';
 
-  database.query(sql, params, 'release', function(err, rows) {
-    if (err) {
-      callback(response.error(400, err));
-      return;
-    }
-    
-    UserCtrl.readFromID(id, callback);
+  database.query(sql, params, 'release', function (err, rows) {
+      if (err) {
+          callback(response.error(400, err));
+          return;
+      }
+
+      UserCtrl.readFromID(rows.insertId, callback);
+  });
+};
+
+
+UserCtrl.edit = function (id, fbToken, userFacebook, callback) {
+  params = [userFacebook.name, fbToken, userFacebook.picture.data.url, userFacebook.email];
+  sql = 'UPDATE user SET name = ?, fbToken = ?, photo_url = ? WHERE email = ?';
+
+  database.query(sql, params, 'release', function (err, rows) {
+      if (err) {
+          callback(response.error(400, err));
+          return;
+      }
+
+      UserCtrl.readFromID(id, callback);
+  });
+};
+
+
+UserCtrl.signin = function (fbToken, callback) {
+  var request = require("request");
+
+  var fbURL = 'https://graph.facebook.com/me';
+  var actions = '&fields=name,email,id,picture';
+  var url = fbURL + '?access_token=' + fbToken + actions;
+
+  var options = {
+      url: url,
+      method: 'GET',
+      encoding: null,
+      contentType: 'application/json'
+  }
+
+  request(options, function (error, response, body) {
+      if (error) {
+          callback(response.error(400, error));
+          return;
+      }
+
+      if (response.statusCode != 200) {
+          callback(response.status(response.statusCode).json({ 'message': 'Não foi possível autenticar pelo Facebook.' }));
+      } else {
+          var userFacebook = JSON.parse(body);
+
+          var params = [userFacebook.email];
+          var sql = 'SELECT id, name, email, fbToken, photo_url FROM user WHERE email = ?';
+
+          database.query(sql, params, 'release', function (err, rows) {
+              if (err) {
+                  callback(response.error(400, err));
+                  return;
+              }
+
+              if (!rows || rows.length == 0) {
+                  UserCtrl.insert(fbToken, userFacebook, callback);
+              } else {
+                  UserCtrl.edit(rows[0].id, fbToken, userFacebook, callback);
+              }
+          });
+      }
   });
 };
 

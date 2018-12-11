@@ -21,7 +21,8 @@ app.use(express.static(__dirname + '/public'));
 var actorCtrl = require('./server/controllers/actor.js');
 var movieCtrl = require('./server/controllers/movie.js');
 var directorCtrl = require('./server/controllers/director.js');
-var userCtrl = require('./server/controllers/user.js');
+var usersCtrl = require('./server/controllers/users.js');
+var userMovieCtrl = require('./server/controllers/user_movie.js')
 
 //router
 
@@ -140,38 +141,47 @@ app.post('/director', function(req, res) {
 	});
 });
 
-// Login endpoint
+// User EndPoints
 
-app.post('/auth/signin/fb', function (req, res) {
-	 var request = require("request"); 
-	 var fbURL = 'https://graph.facebook.com/me'; 
-	 var actions = '&fields=name,email,id,picture'; 
-	 var fbToken = req.body.fbToken; 
-	 var url = fbURL + '?access_token=' + fbToken + actions; 
-	 var options = {
-				 url:url, 
-				 method:'GET',
-				 contentType: 'application/json'
-				 }
-	request(options, function (error, response, body) {
-		 if (response.statusCode != 200) {
-			  res.status(response.statusCode).json({ 
-					'statusCode':response.statusCode, 
-					'result': { 'message':'Não foi possível logar com o Facebook'}
-				}) 
-					res.status(400).send(req.body)
-				}else{
-					var json = JSON.parse(body);
-					console.log(json);
 
-					res.status(200).json({
-						'statusCode':200,
-						'result' : {
-							'name' : json.name,
-							'email' : json.email,
-							'picture' : json.picture
-						}
-					})				
-				}     
-				}); 
-		}); 
+app.get('/user/:id/statistic', function (req, res) {
+	var id = req.params["id"];
+	userMovieCtrl.statistic(id, function (resp) {
+		res.status(resp.statusCode).json(resp);
+	});
+});
+
+app.get('/user/:id/list', function (req, res) {
+	var id = req.params["id"];
+	userMovieCtrl.readAll(id, function (resp) {
+		res.status(resp.statusCode).json(resp);
+	});
+});
+
+app.post('/user/:id/list', function (req, res) {
+	var userId = req.params["id"];
+	var body = req.body;
+	userMovieCtrl.insert(userId, body, function (resp) {
+		res.status(resp.statusCode).json(resp);
+	});
+});
+
+app.delete('/user/:userid/list/:movieid', function (req, res) {
+	var userId = req.params["userid"];
+	var movieId = req.params["movieid"];
+	userMovieCtrl.deleteFromID(userId, movieId, function (resp) {
+		res.status(resp.statusCode).json(resp);
+	});
+});
+
+
+
+app.post('/auth/signin', function (req, res) {
+	var fbToken = req.body.fbToken;
+	usersCtrl.signin(fbToken, function (resp) {
+		res.status(resp.statusCode).json(resp);
+	});
+});
+
+
+
